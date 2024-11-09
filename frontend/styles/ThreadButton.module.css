@@ -1,0 +1,19 @@
+.ThreadButton {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    display: block;
+    width: 100%;
+    text-align: center;
+    transition: background-color 0.3s;
+  }
+  
+.ThreadButton:hover {
+    background-color: #0056b3;
+}
+  

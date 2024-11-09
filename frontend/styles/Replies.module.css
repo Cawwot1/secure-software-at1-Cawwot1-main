@@ -1,0 +1,29 @@
+.replies {
+  margin-top: 20px;
+  padding-left: 20px;
+  border-left: 3px solid #444;
+}
+
+.reply {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #333;
+  border-radius: 8px;
+  border: 1px solid #444;
+}
+
+.author {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.time {
+  font-size: 12px;
+  color: #ccc;
+  margin-bottom: 10px;
+}
+
+.replyText {
+  font-size: 16px;
+  color: #ccc;
+}

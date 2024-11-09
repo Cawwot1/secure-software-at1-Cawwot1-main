@@ -1,0 +1,46 @@
+# Global ignore
+.DS_Store
+*.log
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Ignore Python virtual environment and compiled files for backend
+/backend/__pycache__/
+/backend/classes/__pycache__/
+/backend/*.py[cod]
+/backend/*.so
+/backend/*.egg-info/
+/backend/.env
+/backend/venv/
+/backend/env/
+/backend/.venv
+/backend/Pipfile.lock
+/backend/pyvenv.cfg
+/backend/.mypy_cache
+/backend/.pytest_cache
+/backend/.coverage
+/backend/.cache
+
+# Ignore Next.js build artifacts and node_modules for frontend
+/frontend/node_modules/
+/frontend/.next/
+/frontend/out/
+/frontend/.env.local
+/frontend/.env.production
+/frontend/.env.development
+/frontend/.env.test
+/frontend/.vercel
+/frontend/.turbo
+/frontend/build/
+
+# Ignore package lock and yarn lock files
+/backend/Pipfile.lock
+/frontend/package-lock.json
+/frontend/yarn.lock
+
+# Ignore IDE specific settings
+.vscode/
+.idea/
+*.swp
+*~ 
