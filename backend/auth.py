@@ -13,19 +13,19 @@ email_domains = [
 ]
 
 EMAIL_PATTERN = re.compile(r'^[a-zA-Z0-9_]+@+.')
-USERNAME_PATTERN = re.compile(r'^[a-zA-Z0-9_]+.+_')
-PASSWORD_PATTERN = re.compile(r'[a-zA-Z0-9_]+.+_')
+USERNAME_PATTERN = re.compile(r'^[a-zA-Z0-9_.]')
+PASSWORD_PATTERN = re.compile(r'[a-zA-Z0-9_.]')
 
 #Email Regeister Authentication - USER TOKEN
 
 def user_auth_register(email, password, first_name, last_name):
-    email = email.lower()  # Normalize the email to lowercase
+    # Normalize the email to lowercase
     if email in users:
         abort(400, description="Email already exists")
 
     if not EMAIL_PATTERN.match(email):
         abort(400, description="Invalid Special Symbols in Email")
-    
+
     if not PASSWORD_PATTERN.match(password):
         abort(400, description="Invalid Special Symbols in Password")
 
@@ -38,11 +38,11 @@ def user_auth_register(email, password, first_name, last_name):
     new_user = User(email, first_name, last_name, password)
     users[email] = new_user  # Store the user object by email
 
-    return new_user.token
+    return new_user.token, new_user.csrf_token                                              #Stage 2.2 Returns Newly Generated CSRF Token to SERVER.py
 
 #Login Auth.
 
-def user_auth_login(email, password_input):
+def user_auth_login(email, password_input):         
     email = email.lower()  # Normalize the email to lowercase
     
     if email not in users:
@@ -53,11 +53,10 @@ def user_auth_login(email, password_input):
         abort(401, description="Invalid password")
 
     # Generate a new token and update the user's token attribute
-    user.token = user.generate_token(email)
-    
-    # Return the new token
-    return user.token
+    user.token = user.generate_token(email)                                             
 
+    # Return the new token
+    return user.token, user.csrf_token                                                      #Stage 2.2 Returns CSRF Token of User to SERVER.py
 
 def user_auth_logout(token):
     # Loop through all users in the dictionary
@@ -69,13 +68,13 @@ def user_auth_logout(token):
     # If no matching token is found, abort with an error
     abort(401, description="Token does not exist")
 
-def user_auth_validate_token(token):
-
+def user_auth_validate_token(token, csrf_token): #Token Validation                                              Stage 2.1 & 2.2 - Used helper fuctions in USER.py
+    
     for user in users.values():
-        print(f'{user.email} is for {user.token}')
+        if user.validate_csrf_token(csrf_token) and user.validate_token(token):
+            return True
+        else:
+            return False
 
-    for user in users.values():
-        if user.token == token:  # Check if the token matches
-            return True  # Token found, return True
-
-    abort(401, description="Token does not exist")
+if __name__ == "__main__" :
+    user_auth_register("rkkknas@hotmail.com", "mlklk@onsdfns_.", "first_name", "last_name") #Testing Login Filter

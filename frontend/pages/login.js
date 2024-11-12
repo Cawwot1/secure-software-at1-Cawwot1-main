@@ -25,8 +25,10 @@ export const Login = () => {
       event.preventDefault(); 
     
       try {
-        const token = await requestUserAuthLogin(email, password);
+        const [token, csrfToken] = await requestUserAuthLogin(email, password, firstName, lastName);                         //Stage 2.2 Catches both tokens instead of just "token"
         localStorage.setItem('authToken', token);
+        localStorage.setItem('csrfToken', csrfToken)                                                                            //Stage 2.2 Stores csrf token inside local storage
+        
         window.location.href = "/forum";
       } catch (error) {
           console.error('Login failed:', error);

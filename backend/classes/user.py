@@ -6,8 +6,9 @@ import hmac
 import hashlib
 import time
 
-#Other stuff - Add to another file
-SECRET_KEY = "d4f8e19cfa6a4c748e583234e905849f0c7b2f3e5db8ab3cdd4f5b6d1e2f3c4b"
+#Other stuff
+from general_storage import *
+
 
 class User():
     def __init__(self, email, first_name, last_name, password):
@@ -15,21 +16,36 @@ class User():
         self.first_name = first_name
         self.last_name = last_name
         self.password_hash = self.hash_password(password)
-        self.token = self.generate_token(email, SECRET_KEY)
+        self.token = self.generate_token(email) #Session Token
+        self.csrf_token = self.generate_token(self.token) #CSRF Token
     
-    def generate_token(self, user_email: str, secret_key: str) -> str: #Generates a secure Token
-        
+    def generate_token(self, user_identifier: str) -> str: #Generates a secure Token
+
         random_data = secrets.token_bytes(32) #Generate 32 random bytes (256 bits)
         timestamp = int(time.time()) #Get current timestamp in seconds
         
-        token_data = f"{user_email}-{timestamp}".encode() + random_data
+        token_data = f"{user_identifier}-{timestamp}".encode() + random_data
     
-        signature = hmac.new(secret_key.encode(), token_data, hashlib.sha256).hexdigest() #Generate HMAC signature using a secret key
+        signature = hmac.new(SECRET_KEY.encode(), token_data, hashlib.sha256).hexdigest() #Generate HMAC signature using a secret key
          
         token = f"{token_data.hex()}-{signature}"
         
         return token
+
+    def validate_token(self, session_token): #Validates session token
+        
+        if user.token == session_token:
+            return True
+        else:
+            return False
     
+    def validate_csrf_token(self, csrf_token): #Validates csrf token
+        
+        if user.csrf_token == csrf_token:
+            return True
+        else:
+            return False
+        
     def revoke_token(self):
         self.token = None
 
@@ -60,7 +76,7 @@ class User():
         }
 
 if __name__ == '__main__':
-    
+
     # Create a new user with email and password
     user = User(email="rianni@kings.edu.au", first_name="Rocco", last_name="Ianni", password="HelloThere")
 
@@ -71,6 +87,15 @@ if __name__ == '__main__':
         print("Password verification successful.")
     else:
         print("Password verification failed.")
+
+    session_token = user.token
+    #session_token = "123456" #Invalid Token
+
+    # Returns TRUE for valid token
+    if user.validate_token(session_token):
+        print('Valid token')
+    else:
+        #Return FALSE for invalid token
+        print('Invalid token')
     
-    #User Token
-    print(user.token)
+    #CRSF Test

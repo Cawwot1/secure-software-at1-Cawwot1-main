@@ -10,22 +10,28 @@ export default async function requestUserAuthRegister(email, password, firstName
     };
 
     try { 
+        console.log("0");
         const response = await fetch(SERVER_URL + '/auth/register', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                //'Authorization': `session token ${token}`, //ADDDED
+                //'CSRF Token': `csrf token ${csrf_token}` //ADDDED  
             },
             body: JSON.stringify(data),
         });
+        console.log("1");
    
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.error || 'Unknown error occurred');
         }
+        console.log("2");
 
         const result = await response.json(); // Parse JSON response
+        console.log("3");
         console.log('Response from server:', result);
-        return result.token; // Return the token if registration is successful
+        return result.token, result.csrf_token; // Return the token if registration is successful                           Stage 2.2 Added "result.csrf_token" to return it to local storage
     } catch (error) {
         console.error('Error during registration:', error);
         throw error; // Re-throw the error so it can be handled in handleSubmit

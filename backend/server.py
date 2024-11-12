@@ -19,12 +19,18 @@ def sanitise_input(user_input):
     # Basic HTML escaping
     return html.escape(user_input)
 
+#Helper Token Validation Fuction
+def token_validation_helper(session_token):
+    user_auth_validate_token(session_token)
+    #Add CSRF Protection
+
 @app.route('/') 
 def index():
     return 'Index route'
 
 # POST API to register a user
-@app.route('/auth/register', methods=['POST'])
+
+@app.route('/auth/register', methods=['POST']) #Creates the User
 def register_user():
     data = request.json
     email = sanitise_input(data['email'])
@@ -33,26 +39,26 @@ def register_user():
     last_name = sanitise_input(data['lastName'])
 
     try:
-        session_token = user_auth_register(email, password, first_name, last_name)
-        return jsonify({"message": "User registered successfully", "token": session_token}), 201
+        session_token, csrf_token = user_auth_register(email, password, first_name, last_name)                      #Authentication Register - Stage 1.2 || Stage 2.1 & 2.2 Returns csrf_token & session token
+        return jsonify({"message": "User registered successfully", "token": session_token, "csrf_token": csrf_token}), 201
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
         return jsonify({"error": str(e)}), 406
 
-@app.route('/auth/login', methods=['POST'])
-def login_user():
+@app.route('/auth/login', methods=['POST']) #Logins the User, giving them a session token
+def login_user(): 
     data = request.json
     email = sanitise_input(data['email'])
     password = sanitise_input(data['password'])
 
     try:
-        session_token = user_auth_login(email, password)
-        return jsonify({"message": "User logged in successfully", "token": session_token}), 201
+        session_token, csrf_token = user_auth_login(email, password)                                                #Stage 2.1 & 2.2 Returns logged User's csrf_token & session token
+        return jsonify({"message": "User logged in successfully", "token": session_token, "csrf_token": csrf_token}), 201                  
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
         return jsonify({"error": str(e)}), 401
 
-@app.route('/auth/logout', methods=['DELETE'])
+@app.route('/auth/logout', methods=['DELETE'])                                                                      #TODO, Delete the tokens
 def logout_user():
     data = request.json
     session_token = sanitise_input(data['sessionToken'])
@@ -92,7 +98,7 @@ def validate_token():
     session_token = sanitise_input(data['sessionToken'])
 
     try:
-        if (user_auth_validate_token(session_token)):
+        if (user_auth_validate_token(session_token)):                                               #TODO Add CSRF Token (sess_token, CSRF_tok)
                 return jsonify({"message": "Token is valid"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 401
@@ -113,3 +119,5 @@ def store_reply():
 if __name__ == '__main__':
     app.run(debug=True, port=5005)
 
+    #testing 2.3 await asyncio.sleep(10) 
+    #Stops the code for 10 sec
