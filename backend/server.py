@@ -39,7 +39,12 @@ def register_user():
     last_name = sanitise_input(data['lastName'])
 
     try:
-        session_token, csrf_token = user_auth_register(email, password, first_name, last_name)                      #Authentication Register - Stage 1.2 || Stage 2.1 & 2.2 Returns csrf_token & session token
+        [session_token, csrf_token] = user_auth_register(email, password, first_name, last_name)                       #Authentication Register - Stage 1.2 || Stage 2.1 & 2.2 Returns csrf_token & session token
+        
+        #Testing - Correct
+        print(f"\nSession Token - /auth/register: || {session_token}\n",
+        f"CSRF Token: {csrf_token}\n")
+        
         return jsonify({"message": "User registered successfully", "token": session_token, "csrf_token": csrf_token}), 201
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
@@ -52,7 +57,7 @@ def login_user():
     password = sanitise_input(data['password'])
 
     try:
-        session_token, csrf_token = user_auth_login(email, password)                                                #Stage 2.1 & 2.2 Returns logged User's csrf_token & session token
+        [session_token, csrf_token] = user_auth_login(email, password)                                                #Stage 2.1 & 2.2 Returns logged User's csrf_token & session token
         return jsonify({"message": "User logged in successfully", "token": session_token, "csrf_token": csrf_token}), 201                  
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
@@ -60,11 +65,15 @@ def login_user():
 
 @app.route('/auth/logout', methods=['DELETE'])                                                                      #TODO, Delete the tokens
 def logout_user():
+
+    print("DONT YOU DARE MFKER")
+
     data = request.json
     session_token = sanitise_input(data['sessionToken'])
+    csrf_token = sanitise_input(data['sessionToken'])
 
     try:
-        user_auth_logout(session_token)
+        user_auth_logout(session_token, csrf_token)
         return jsonify({"message": "User logged out successfully"}), 200
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
@@ -86,23 +95,43 @@ def create_new_forum():
     
 @app.route('/forum/retrieve', methods=['GET']) 
 def retrieve_all_forums():
+
+
+
     try:
         forum_dict = admin_retrieve_forum_data()
         return jsonify({"message": "All forum data returned succesfully", "forums": forum_dict}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 401
 
-@app.route('/auth/validate', methods=['POST'])
+@app.route('/auth/validate', methods=['POST'])                            
 def validate_token():
     data = request.json
     session_token = sanitise_input(data['sessionToken'])
+    csrf_token = sanitise_input(data['csrfToken'])                                                  #Stage 2.2 | Extracts csrf Token from the LocalStorage
+
+    #print(csrf_token) correct
+
+    [validate_var, error_info, user_token, server_token] = user_auth_validate_token(session_token, csrf_token)               #Stage 2.2 | Splits the validation result (for more detail about errors)
+
+    print(f"User Token: {user_token}")
+    print(f"Server Token: {server_token}")
+    print(validate_var)
+    print(error_info)
 
     try:
-        if (user_auth_validate_token(session_token)):                                               #TODO Add CSRF Token (sess_token, CSRF_tok)
-                return jsonify({"message": "Token is valid"}), 200
+        if validate_var:                                               
+                return jsonify({"message": "Token & CSRF is valid"}), 200
+        else:                                                                                       #Stage 2.2 | Handles Unknown & Token Errors
+                if error_info == "CSRF":
+                    return jsonify({"error": "Invalid CSRF Token"}), 401
+                elif error_info == "Token":
+                    return jsonify({"error": "Invalid Session Token"}), 401
+                else:
+                    return jsonify({"error": "Unknown validation error"}), 400
     except Exception as e:
-        return jsonify({"error": str(e)}), 401
-
+        return jsonify({"error": "An unexpected error occurred", "message": str(e)}), 500
+        
 @app.route('/forum/reply/submit', methods=['POST'])
 def store_reply():
     data = request.json
@@ -118,6 +147,6 @@ def store_reply():
 
 if __name__ == '__main__':
     app.run(debug=True, port=5005)
-
+    
     #testing 2.3 await asyncio.sleep(10) 
     #Stops the code for 10 sec

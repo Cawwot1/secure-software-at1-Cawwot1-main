@@ -29,7 +29,10 @@ export const Login = () => {
         try {
           console.log('Starting registration...');
           const [token, csrfToken] = await requestUserAuthRegister(email, password, firstName, lastName);                        //Stage 2.2 Catches both tokens instead of just "token"
-          console.log('meng is veyr gay');
+          
+          console.log(`Session Token: ${token}
+                        CSRF Token: ${csrfToken}`);
+          
           localStorage.setItem('authToken', token);
           localStorage.setItem('csrfToken', csrfToken)                                                                            //Stage 2.2 Stores csrf token inside local storage
 

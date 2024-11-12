@@ -21,6 +21,10 @@ class User():
     
     def generate_token(self, user_identifier: str) -> str: #Generates a secure Token
 
+        gen_num = 0
+        gen_num += 1
+        print(f"Token Generation: {gen_num}")
+
         random_data = secrets.token_bytes(32) #Generate 32 random bytes (256 bits)
         timestamp = int(time.time()) #Get current timestamp in seconds
         
@@ -33,21 +37,22 @@ class User():
         return token
 
     def validate_token(self, session_token): #Validates session token
-        
-        if user.token == session_token:
+
+        if self.token == session_token:
             return True
         else:
             return False
     
     def validate_csrf_token(self, csrf_token): #Validates csrf token
-        
-        if user.csrf_token == csrf_token:
+        if self.csrf_token == csrf_token:
             return True
         else:
             return False
         
-    def revoke_token(self):
+    def revoke_token(self):                                                                        #Stage 2.2 | Revokes both tokens (Session & CSRF)
+        print("REVOKE TOKEN")
         self.token = None
+        self.csrf_token = None
 
     def hash_password(self, password_input):
         # Convert the password string to bytes

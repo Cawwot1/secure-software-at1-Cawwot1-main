@@ -3,15 +3,20 @@ const SERVER_URL = `${config.backend.url}`;
 
 export default async function requestUserCreateForum(title, forumQuestion) {
     const token = localStorage.getItem('authToken');
-    console.log(`Token after login is ${token}`)
-    if (!token) {
+    const csrf_token = localStorage.getItem('csrfToken');
+    
+    console.log(`Session Token after login is ${token}
+        CSRF Token after login is ${csrf_token}`)
+    
+    if (!token || !csrf_token) {
         throw new Error('No token found');
     }
 
     const data = {
         title: title,
         forumQuestion: forumQuestion, 
-        sessionToken: token 
+        sessionToken: token,
+        csrfToken: token
     };
 
     try { 

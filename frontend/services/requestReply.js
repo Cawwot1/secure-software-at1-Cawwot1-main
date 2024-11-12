@@ -1,15 +1,17 @@
 import config from '../config.json';  // Import the config file
 const SERVER_URL = `${config.backend.url}`;
 
-export default async function requestReplySubmit(formumDataID, replyCommennt) {
+export default async function requestReplySubmit(forumDataID, replyCommennt) {
     const token = localStorage.getItem('authToken');
+    const csrf_token = localStorage.getItem('csrfToken');
     if (!token) {
         throw new Error('No token found');
     }
     const data = {
-        forumId: formumDataID,
+        forumId: forumDataID,
         reply: replyCommennt,
-        sessionToken: token
+        sessionToken: token,
+        csrfToken: csrf_token
     };
 
     try { 
