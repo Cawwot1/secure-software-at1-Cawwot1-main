@@ -21,10 +21,6 @@ class User():
     
     def generate_token(self, user_identifier: str) -> str: #Generates a secure Token
 
-        gen_num = 0
-        gen_num += 1
-        print(f"Token Generation: {gen_num}")
-
         random_data = secrets.token_bytes(32) #Generate 32 random bytes (256 bits)
         timestamp = int(time.time()) #Get current timestamp in seconds
         
@@ -36,21 +32,19 @@ class User():
         
         return token
 
-    def validate_token(self, session_token): #Validates session token
-
+    async def validate_token(self, session_token): #Validates session token
         if self.token == session_token:
             return True
         else:
             return False
     
-    def validate_csrf_token(self, csrf_token): #Validates csrf token
+    async def validate_csrf_token(self, csrf_token): #Validates csrf token
         if self.csrf_token == csrf_token:
             return True
         else:
             return False
         
-    def revoke_token(self):                                                                        #Stage 2.2 | Revokes both tokens (Session & CSRF)
-        print("REVOKE TOKEN")
+    async def revoke_token(self):                                                                        #Stage 2.2 | Revokes both tokens (Session & CSRF)
         self.token = None
         self.csrf_token = None
 
@@ -61,7 +55,7 @@ class User():
         password_hashed = hashlib.sha256(password_bytes).hexdigest()
         return password_hashed
     
-    def verify_password(self, password_input):
+    async def verify_password(self, password_input):
         
         #check
         #print(self.password_hash)
@@ -72,7 +66,7 @@ class User():
         else:
             return(False)
 
-    def user_data(self): 
+    async def user_data(self): 
         return {
             'email': self.email,
             'first_name': self.first_name,
@@ -80,7 +74,7 @@ class User():
             'password': self.password_hash
         }
 
-if __name__ == '__main__':
+if  __name__ == '__main__':
 
     # Create a new user with email and password
     user = User(email="rianni@kings.edu.au", first_name="Rocco", last_name="Ianni", password="HelloThere")

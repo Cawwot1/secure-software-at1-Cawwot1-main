@@ -13,7 +13,7 @@ export default async function requestUserAuthLogin(email, password) {
             headers: {
                 'Content-Type': 'application/json',
                 //'Authorization': `session token ${token}`, //ADDDED
-                //'CSRF Token': `crsf token ${csrf_token}` //ADDDED                            //TODO &&R#*&*&*%#*#%#*&%*#
+                //'CSRF Token': `crsf token ${csrf_token}` //ADDDED                           
             },
             body: JSON.stringify(data)
         });

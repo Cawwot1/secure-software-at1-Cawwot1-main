@@ -15,12 +15,12 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'  # Helps prevent CSRF attacks f
 CORS(app)
 
 #XSS Sanitation
-def sanitise_input(user_input):
+async def sanitise_input(user_input):
     # Basic HTML escaping
     return html.escape(user_input)
 
 #Helper Token Validation Fuction
-def token_validation_helper(session_token):
+async def token_validation_helper(session_token):
     user_auth_validate_token(session_token)
     #Add CSRF Protection
 
@@ -31,19 +31,15 @@ def index():
 # POST API to register a user
 
 @app.route('/auth/register', methods=['POST']) #Creates the User
-def register_user():
+async def register_user():
     data = request.json
-    email = sanitise_input(data['email'])
-    password = sanitise_input(data['password'])
-    first_name = sanitise_input(data['firstName'])
-    last_name = sanitise_input(data['lastName'])
+    email = await sanitise_input(data['email'])
+    password = await sanitise_input(data['password'])
+    first_name = await sanitise_input(data['firstName'])
+    last_name = await sanitise_input(data['lastName'])
 
     try:
-        [session_token, csrf_token] = user_auth_register(email, password, first_name, last_name)                       #Authentication Register - Stage 1.2 || Stage 2.1 & 2.2 Returns csrf_token & session token
-        
-        #Testing - Correct
-        print(f"\nSession Token - /auth/register: || {session_token}\n",
-        f"CSRF Token: {csrf_token}\n")
+        [session_token, csrf_token] = await user_auth_register(email, password, first_name, last_name)                       #Authentication Register - Stage 1.2 || Stage 2.1 & 2.2 Returns csrf_token & session token
         
         return jsonify({"message": "User registered successfully", "token": session_token, "csrf_token": csrf_token}), 201
     except Exception as e:
@@ -51,29 +47,27 @@ def register_user():
         return jsonify({"error": str(e)}), 406
 
 @app.route('/auth/login', methods=['POST']) #Logins the User, giving them a session token
-def login_user(): 
+async def login_user(): 
     data = request.json
-    email = sanitise_input(data['email'])
-    password = sanitise_input(data['password'])
+    email = await sanitise_input(data['email'])
+    password = await sanitise_input(data['password'])
 
     try:
-        [session_token, csrf_token] = user_auth_login(email, password)                                                #Stage 2.1 & 2.2 Returns logged User's csrf_token & session token
+        [session_token, csrf_token] = await user_auth_login(email, password)                                                #Stage 2.1 & 2.2 Returns logged User's csrf_token & session token
         return jsonify({"message": "User logged in successfully", "token": session_token, "csrf_token": csrf_token}), 201                  
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
         return jsonify({"error": str(e)}), 401
 
 @app.route('/auth/logout', methods=['DELETE'])                                                                      #TODO, Delete the tokens
-def logout_user():
-
-    print("DONT YOU DARE MFKER")
+async def logout_user():
 
     data = request.json
-    session_token = sanitise_input(data['sessionToken'])
-    csrf_token = sanitise_input(data['sessionToken'])
+    session_token = await sanitise_input(data['sessionToken'])
+    csrf_token = await sanitise_input(data['sessionToken'])
 
     try:
-        user_auth_logout(session_token, csrf_token)
+        await user_auth_logout(session_token, csrf_token)
         return jsonify({"message": "User logged out successfully"}), 200
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
@@ -81,38 +75,36 @@ def logout_user():
 
     
 @app.route('/forum/new/question', methods=['POST']) 
-def create_new_forum():
+async def create_new_forum():
     data = request.json
-    forum_title = sanitise_input(data['title'])
-    forum_question = sanitise_input(data['forumQuestion'])
-    session_token = sanitise_input(data['sessionToken'])
+    forum_title = await sanitise_input(data['title'])
+    forum_question = await sanitise_input(data['forumQuestion'])
+    session_token = await sanitise_input(data['sessionToken'])
 
     try:
-        user_create_forum(forum_title, forum_question, session_token)
+        await user_create_forum(forum_title, forum_question, session_token)
         return jsonify({"message": "Forum created succesfully"}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 401
     
 @app.route('/forum/retrieve', methods=['GET']) 
-def retrieve_all_forums():
-
-
+async def retrieve_all_forums():
 
     try:
-        forum_dict = admin_retrieve_forum_data()
+        forum_dict = await admin_retrieve_forum_data()
         return jsonify({"message": "All forum data returned succesfully", "forums": forum_dict}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 401
 
 @app.route('/auth/validate', methods=['POST'])                            
-def validate_token():
+async def validate_token():
     data = request.json
-    session_token = sanitise_input(data['sessionToken'])
-    csrf_token = sanitise_input(data['csrfToken'])                                                  #Stage 2.2 | Extracts csrf Token from the LocalStorage
+    session_token = await sanitise_input(data['sessionToken'])
+    csrf_token = await sanitise_input(data['csrfToken'])                                                  #Stage 2.2 | Extracts csrf Token from the LocalStorage
 
     #print(csrf_token) correct
 
-    [validate_var, error_info, user_token, server_token] = user_auth_validate_token(session_token, csrf_token)               #Stage 2.2 | Splits the validation result (for more detail about errors)
+    [validate_var, error_info, user_token, server_token] = await user_auth_validate_token(session_token, csrf_token)               #Stage 2.2 | Splits the validation result (for more detail about errors)
 
     print(f"User Token: {user_token}")
     print(f"Server Token: {server_token}")
@@ -133,11 +125,11 @@ def validate_token():
         return jsonify({"error": "An unexpected error occurred", "message": str(e)}), 500
         
 @app.route('/forum/reply/submit', methods=['POST'])
-def store_reply():
+async def store_reply():
     data = request.json
-    forum_id = sanitise_input(data['forumId'])
-    reply_comment = sanitise_input(data['reply'])
-    session_token = sanitise_input(data['sessionToken'])
+    forum_id = await sanitise_input(data['forumId'])
+    reply_comment = await sanitise_input(data['reply'])
+    session_token = await sanitise_input(data['sessionToken'])
 
     try:
         user_add_reply(forum_id, reply_comment, session_token)

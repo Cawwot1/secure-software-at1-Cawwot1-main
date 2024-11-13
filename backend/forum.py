@@ -7,11 +7,11 @@ from classes.user import User
 # Dictionary to store forums by their numeric ID
 next_forum_id = 1  # This will serve as our auto-incrementing ID
 
-def user_create_forum(forum_title, forum_question, session_token):
+async def user_create_forum(forum_title, forum_question, session_token):
     global next_forum_id
     # Create a new Forum object
 
-    author = admin_retrieve_author_name(session_token)
+    author = await admin_retrieve_author_name(session_token)
     new_forum = Forum(
         id=next_forum_id,
         title=forum_title,
@@ -25,7 +25,7 @@ def user_create_forum(forum_title, forum_question, session_token):
 
     return new_forum.id
 
-def user_add_reply(forum_id, reply_text, session_token):
+async def user_add_reply(forum_id, reply_text, session_token):
     target_forum = None  # Initialize target_forum as None
 
    # Loop through the forums dictionary to find the matching forum ID
@@ -44,7 +44,7 @@ def user_add_reply(forum_id, reply_text, session_token):
         abort(401, description="Invalid session token")
 
     # Add the reply to the found forum
-    target_forum.add_reply_to_question(author, reply_text)
+    await target_forum.add_reply_to_question(author, reply_text)
     for index, reply in enumerate(target_forum.question['replies'], start=1):
                 print(f"Reply {index}:")
                 print(f"  Author: {reply['author']}")

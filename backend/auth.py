@@ -18,7 +18,7 @@ PASSWORD_PATTERN = re.compile(r'[a-zA-Z0-9_.]')
 
 #Email Regeister Authentication - USER TOKEN
 
-def user_auth_register(email, password, first_name, last_name):
+async def user_auth_register(email, password, first_name, last_name):
     # Normalize the email to lowercase
     if email in users:
         abort(400, description="Email already exists")
@@ -38,15 +38,11 @@ def user_auth_register(email, password, first_name, last_name):
     new_user = User(email, first_name, last_name, password)
     users[email] = new_user  # Store the user object by email
 
-    #Testing - Correct
-    print(f"\nSession Token - User Register: || {new_user.token}\n",
-        f"CSRF Token: {new_user.csrf_token }\n")
-
     return new_user.token, new_user.csrf_token                                              #Stage 2.2 Returns Newly Generated CSRF Token to SERVER.py
 
 #Login Auth.
 
-def user_auth_login(email, password_input):         
+async def user_auth_login(email, password_input):         
     email = email.lower()  # Normalize the email to lowercase
     
     if email not in users:
@@ -63,7 +59,7 @@ def user_auth_login(email, password_input):
     # Return the new token
     return [user.token, user.csrf_token]                                                    #Stage 2.2 Returns CSRF Token of User to SERVER.py
 
-def user_auth_logout(session_token, csrf_token):                                            #Stage 2.2 Collects Session Token & CSRF Token to dispose of
+async def user_auth_logout(session_token, csrf_token):                                            #Stage 2.2 Collects Session Token & CSRF Token to dispose of
     # Loop through all users in the dictionary
     for user in users.values():
         if user.token == session_token:  # Check if the token matches
@@ -73,7 +69,7 @@ def user_auth_logout(session_token, csrf_token):                                
     # If no matching token is found, abort with an error
     abort(401, description="Token does not exist")
 
-def user_auth_validate_token(token, csrf_token): #Token Validation                                              Stage 2.1 & 2.2 - Used helper fuctions in USER.py
+async def user_auth_validate_token(token, csrf_token): #Token Validation                                              Stage 2.1 & 2.2 - Used helper fuctions in USER.py
     
     # Stage 2.1 & 2.2 - Used helper functions in USER.py
     

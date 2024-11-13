@@ -13,12 +13,12 @@ class Forum:
             'replies': []  # Initialize with an empty list for replies
         }
 
-    def add_reply_to_question(self, author, text):
+    async def add_reply_to_question(self, author, text):
         reply = {'author': author, 'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'text': text}
         self.question['replies'].append(reply)
         self.replies += 1  # Increment the number of replies
 
-    def to_dict(self):
+    async def to_dict(self):
         return {
             'id': self.id,
             'title': self.title,
