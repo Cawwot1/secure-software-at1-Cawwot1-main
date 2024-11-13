@@ -4,7 +4,7 @@ const SERVER_URL = `${config.backend.url}`;
 export default async function requestValidateToken() {
     try { 
         
-        const token = localStorage.getItem('authToken');                        //TOKEN AFTER VALIDATION IS 3!!!????
+        const token = localStorage.getItem('authToken');                       
         const csrf_token = localStorage.getItem('csrfToken');
         
         console.log(`Session Token after login is ${token}
