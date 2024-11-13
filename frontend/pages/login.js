@@ -5,7 +5,9 @@ import {
   MDBCardBody,
   MDBInput,
 } from 'mdb-react-ui-kit';
-import { useRouter } from 'next/router';
+
+import { useRouter } from 'next/router'; //Stage 3.1
+
 import styles from '../styles/Login.module.css'; 
 import requestUserAuthLogin from '../services/requestLogin';
 
@@ -19,19 +21,23 @@ export const Login = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const router = useRouter(); // Initialize useRouter in the component
+    
+    const router = useRouter(); // Initialize useRouter in the component | Stage 3.1
 
     const handleLogin = async (event) => {
       event.preventDefault(); 
     
       try {
         
-        const [token, csrfToken] = await requestUserAuthLogin(email, password);  ///////                        //Stage 2.2 Catches both tokens instead of just "token"
+        const [token, csrfToken] = await requestUserAuthLogin(email, password);                      //Stage 2.2 Catches both tokens instead of just "token"
         
         localStorage.setItem('authToken', token);
         localStorage.setItem('csrfToken', csrfToken)                                                                            //Stage 2.2 Stores csrf token inside local storage
         
-        window.location.href = "/forum";
+        //window.location.href = "/forum";
+
+        router.push('/forum'); // Redirects to '/forum' page | Stage 3.1
+
       } catch (error) {
           console.error('Login failed:', error);
           alert(`Login failed: ${error.message}`);

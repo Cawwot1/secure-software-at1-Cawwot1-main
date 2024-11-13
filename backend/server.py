@@ -127,18 +127,16 @@ async def validate_token():
 @app.route('/forum/reply/submit', methods=['POST'])
 async def store_reply():
     data = request.json
-    forum_id = await sanitise_input(data['forumId'])
+    forum_id = await sanitise_input(str(data['forumId']))
     reply_comment = await sanitise_input(data['reply'])
     session_token = await sanitise_input(data['sessionToken'])
 
     try:
-        user_add_reply(forum_id, reply_comment, session_token)
+        await user_add_reply(forum_id, reply_comment, session_token)
         return jsonify({"message": "Forum reply added succesfully"}), 201
     except Exception as e:
+        
         return jsonify({"error": str(e)}), 401
 
 if __name__ == '__main__':
     app.run(debug=True, port=5005)
-    
-    #testing 2.3 await asyncio.sleep(10) 
-    #Stops the code for 10 sec

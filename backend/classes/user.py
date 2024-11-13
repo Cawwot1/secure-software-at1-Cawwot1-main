@@ -75,26 +75,56 @@ class User():
         }
 
 if  __name__ == '__main__':
-
     # Create a new user with email and password
     user = User(email="rianni@kings.edu.au", first_name="Rocco", last_name="Ianni", password="HelloThere")
 
-    # Verify the password
+    # Verify the password | Stange 1.2
+    """
     password_attempt = "HelloThere"
 
     if user.verify_password(password_attempt):
         print("Password verification successful.")
     else:
         print("Password verification failed.")
+    """
 
-    session_token = user.token
-    #session_token = "123456" #Invalid Token
+    #Session Token Checking | Stage 2.1
+    """
+    correct_session_token = user.token
+    incorrect_session_token = "123456"
 
-    # Returns TRUE for valid token
-    if user.validate_token(session_token):
+    #TRUE
+    if user.validate_token(correct_session_token):
+        print('Valid token')
+    else:
+        #Return FALSE for invalid token
+        print('Invalid token')
+
+    #FALSE
+    if user.validate_token(incorrect_session_token):
+        print('Valid token')
+    else:
+        #Return FALSE for invalid token
+        print('Invalid token')
+
+    """
+
+    #CSRF Token Checking | Stage 2.2
+    """
+    correct_csrf_token = user.token
+    incorrect_csrf_token = "123456"
+
+    #TRUE
+    if user.validate_token(correct_csrf_token):
         print('Valid token')
     else:
         #Return FALSE for invalid token
         print('Invalid token')
     
-    #CRSF Test
+    #FALSE
+    if user.validate_token(incorrect_csrf_token):
+        print('Valid token')
+    else:
+        #Return FALSE for invalid token
+        print('Invalid token')
+    """

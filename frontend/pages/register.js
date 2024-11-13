@@ -5,7 +5,10 @@ import {
   MDBCardBody,
   MDBInput,
 } from 'mdb-react-ui-kit';
+
+//Stage 3.1 | XSS Prevention during redirect
 import { useRouter } from 'next/router';
+
 import styles from '../styles/Login.module.css'; // Import CSS Module
 import requestUserAuthRegister from '../services/requestRegister'; // Import the request function
 
@@ -17,12 +20,13 @@ export const Login = () => {
         };
     }, []);
     
-    const router = useRouter(); // Initialize useRouter in the component
+    const router = useRouter(); // Initialize useRouter in the component | Stage 3.1 
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [firstName, setFirstName] = useState(''); 
     const [lastName, setLastName] = useState(''); 
-    
+
     const handleSubmit = async (event) => {
         event.preventDefault(); 
 
@@ -31,12 +35,18 @@ export const Login = () => {
           const [token, csrfToken] = await requestUserAuthRegister(email, password, firstName, lastName);                        //Stage 2.2 Catches both tokens instead of just "token"
           
           console.log(`Session Token: ${token}
-                        CSRF Token: ${csrfToken}`);
+          CSRF Token: ${csrfToken}`);
           
           localStorage.setItem('authToken', token);
           localStorage.setItem('csrfToken', csrfToken)                                                                            //Stage 2.2 Stores csrf token inside local storage
 
-          window.location.href = "/forum";
+          
+          //TODO CHANGE | OLD
+          //window.location.href = "/forum"; 
+
+          // Using Next.js router for redirection | NEW Stage 3.1
+          router.push('/forum'); // Redirects to '/forum' page
+
         } catch (error) {
           console.error('Registration failed:', error);
           alert(`Registration failed: ${error.message}`); // Show a popup with the error message

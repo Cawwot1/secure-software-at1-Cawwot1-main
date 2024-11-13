@@ -21,6 +21,7 @@ export default async function requestForumData() {
         // Convert the JSON dictionary to an array of objects
         const forumsArray = Object.keys(result.forums).map(key => result.forums[key]);
         console.log(forumsArray)
+
         return forumsArray;
 
     } catch (error) {
