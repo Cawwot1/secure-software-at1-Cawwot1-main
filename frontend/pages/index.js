@@ -2,15 +2,15 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 
-import { useRouter } from 'next/router'; //Stage 3.1
+import { useRouter } from 'next/router'; // Stage 3.1
 
 import { useEffect } from 'react'
 
 export default function Home() {
-  const router = useRouter();
+  
+  const router = useRouter(); // Stange 3.1
+  
   useEffect(() => {
-    
-    //window.location.href = "/login";
     
     router.push('/login'); // Redirects to '/login' page | Stage 3.1
 

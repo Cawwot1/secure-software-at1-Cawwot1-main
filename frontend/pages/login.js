@@ -33,8 +33,6 @@ export const Login = () => {
         
         localStorage.setItem('authToken', token);
         localStorage.setItem('csrfToken', csrfToken)                                                                            //Stage 2.2 Stores csrf token inside local storage
-        
-        //window.location.href = "/forum";
 
         router.push('/forum'); // Redirects to '/forum' page | Stage 3.1
 

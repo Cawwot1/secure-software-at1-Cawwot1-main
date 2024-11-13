@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/router'; // Stage 3.1
 import requestValidateToken from '../services/requestAuth';
 
 export default function useAuthentication() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const router = useRouter();
+  const router = useRouter(); // Stage 3.1
 
   useEffect(() => {
     const checkAuthentication = async () => {
       const isValid = await requestValidateToken();
       if (!isValid) {
-        window.location.href = "/login";
+        router.push('/login'); // Redirects to '/login' page | Stage 3.1
       }
       setIsAuthenticated(isValid);
     };

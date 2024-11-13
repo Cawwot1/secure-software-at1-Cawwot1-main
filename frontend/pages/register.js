@@ -6,7 +6,7 @@ import {
   MDBInput,
 } from 'mdb-react-ui-kit';
 
-//Stage 3.1 | XSS Prevention during redirect
+//Stage 3.1
 import { useRouter } from 'next/router';
 
 import styles from '../styles/Login.module.css'; // Import CSS Module
@@ -40,11 +40,7 @@ export const Login = () => {
           localStorage.setItem('authToken', token);
           localStorage.setItem('csrfToken', csrfToken)                                                                            //Stage 2.2 Stores csrf token inside local storage
 
-          
-          //TODO CHANGE | OLD
-          //window.location.href = "/forum"; 
-
-          // Using Next.js router for redirection | NEW Stage 3.1
+          // Using Next.js router for redirection | Stage 3.1
           router.push('/forum'); // Redirects to '/forum' page
 
         } catch (error) {

@@ -36,7 +36,7 @@ async def user_auth_register(email, password, first_name, last_name):
         abort(400, description="Invalid Special Symbols in Last Name")
 
     new_user = User(email, first_name, last_name, password)
-    users[new_user.token] = new_user  # Store the user object by token ///////
+    users[email] = new_user  # Store the user object by email
 
     return new_user.token, new_user.csrf_token                                              #Stage 2.2 Returns Newly Generated CSRF Token to SERVER.py
 
