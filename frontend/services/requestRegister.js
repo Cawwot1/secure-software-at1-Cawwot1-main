@@ -18,6 +18,7 @@ export default async function requestUserAuthRegister(email, password, firstName
                 //'CSRF Token': `csrf token ${csrf_token}` //ADDDED  
             },
             body: JSON.stringify(data),
+            credentials: 'include' // Include credentials (cookies) in the request
         });
    
         if (!response.ok) {

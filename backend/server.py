@@ -12,7 +12,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SESSION_COOKIE_HTTPONLY'] = True  # Prevent XXS and JS 
 app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'  # Helps prevent CSRF attacks from different sites
 
-CORS(app)
+CORS(app, supports_credentials=True)
 
 #XSS Sanitation
 async def sanitise_input(user_input):
@@ -30,7 +30,7 @@ def index():
 
 # POST API to register a user
 
-@app.route('/auth/register', methods=['POST']) #Creates the User
+@app.route('/auth/register', methods=['GET','POST']) #Creates the User
 async def register_user():
     data = request.json
     email = await sanitise_input(data['email'])
@@ -39,9 +39,16 @@ async def register_user():
     last_name = await sanitise_input(data['lastName'])
 
     try:
-        [session_token, csrf_token] = await user_auth_register(email, password, first_name, last_name)                       #Authentication Register - Stage 1.2 || Stage 2.1 & 2.2 Returns csrf_token & session token
+        session_token, csrf_token = await user_auth_register(email, password, first_name, last_name)                       #Authentication Register - Stage 1.2 || Stage 2.1 & 2.2 Returns csrf_token & session token
+
+        response = make_response(jsonify({"message": "User registered successfully", 
+                                          "token": session_token, 
+                                          "csrf_token": csrf_token}), 201)
         
-        return jsonify({"message": "User registered successfully", "token": session_token, "csrf_token": csrf_token}), 201
+        response.set_cookie("Session Token", session_token, samesite="Lax", httponly=True)
+
+        return response
+    
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
         return jsonify({"error": str(e)}), 406
@@ -104,7 +111,7 @@ async def validate_token():
 
     #print(csrf_token) correct
 
-    [validate_var, error_info, user_token, server_token] = await user_auth_validate_token(session_token, csrf_token)               #Stage 2.2 | Splits the validation result (for more detail about errors)
+    validate_var, error_info, user_token, server_token = await user_auth_validate_token(session_token, csrf_token)               #Stage 2.2 | Splits the validation result (for more detail about errors)
 
     print(f"User Token: {user_token}")
     print(f"Server Token: {server_token}")
