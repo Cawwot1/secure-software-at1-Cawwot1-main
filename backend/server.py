@@ -12,7 +12,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SESSION_COOKIE_HTTPONLY'] = True  # Prevent XXS and JS 
 app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'  # Helps prevent CSRF attacks from different sites
 
-CORS(app, supports_credentials=True)
+CORS(app, supports_credentials=True, origins=["http://127.0.0.1:3001"])
 
 #XSS Sanitation
 async def sanitise_input(user_input):
@@ -45,7 +45,7 @@ async def register_user():
                                           "token": session_token, 
                                           "csrf_token": csrf_token}), 201)
         
-        response.set_cookie("Session Token", session_token, samesite="Lax", httponly=True)
+        response.set_cookie("authToken", session_token, samesite="Lax", httponly=True, path = "/")
 
         return response
     
@@ -60,8 +60,17 @@ async def login_user():
     password = await sanitise_input(data['password'])
 
     try:
-        [session_token, csrf_token] = await user_auth_login(email, password)                                                #Stage 2.1 & 2.2 Returns logged User's csrf_token & session token
-        return jsonify({"message": "User logged in successfully", "token": session_token, "csrf_token": csrf_token}), 201                  
+
+        session_token, csrf_token = await user_auth_login(email, password)                       #Authentication Register - Stage 1.2 || Stage 2.1 & 2.2 Returns csrf_token & session token
+
+        response = make_response(jsonify({"message": "User registered successfully", 
+                                          "token": session_token, 
+                                          "csrf_token": csrf_token}), 201)
+        
+        response.set_cookie("authToken", session_token, samesite="Lax", httponly=True, path = "/")
+
+        return response
+                  
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
         return jsonify({"error": str(e)}), 401
@@ -69,13 +78,18 @@ async def login_user():
 @app.route('/auth/logout', methods=['DELETE'])                                                                      #TODO, Delete the tokens
 async def logout_user():
 
-    data = request.json
-    session_token = await sanitise_input(data['sessionToken'])
-    csrf_token = await sanitise_input(data['sessionToken'])
-
     try:
+        data = request.json
+        session_token = await sanitise_input(data['sessionToken'])
+        csrf_token = await sanitise_input(data['sessionToken'])
+
         await user_auth_logout(session_token, csrf_token)
-        return jsonify({"message": "User logged out successfully"}), 200
+
+        response = make_response(jsonify({"message": "User logged out successfully"}), 200)
+        response.delete_cookie("authToken")
+
+        return response
+
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
         return jsonify({"error": str(e)}), 401
@@ -103,20 +117,16 @@ async def retrieve_all_forums():
     except Exception as e:
         return jsonify({"error": str(e)}), 401
 
-@app.route('/auth/validate', methods=['POST'])                            
+@app.route('/auth/validate', methods=['GET','POST'])                            
 async def validate_token():
     data = request.json
-    session_token = await sanitise_input(data['sessionToken'])
     csrf_token = await sanitise_input(data['csrfToken'])                                                  #Stage 2.2 | Extracts csrf Token from the LocalStorage
 
-    #print(csrf_token) correct
+    session_token = request.cookies.get("authToken")
+
+    print(f"authToken: {session_token}")
 
     validate_var, error_info, user_token, server_token = await user_auth_validate_token(session_token, csrf_token)               #Stage 2.2 | Splits the validation result (for more detail about errors)
-
-    print(f"User Token: {user_token}")
-    print(f"Server Token: {server_token}")
-    print(validate_var)
-    print(error_info)
 
     try:
         if validate_var:                                               
@@ -136,7 +146,10 @@ async def store_reply():
     data = request.json
     forum_id = await sanitise_input(str(data['forumId']))
     reply_comment = await sanitise_input(data['reply'])
-    session_token = await sanitise_input(data['sessionToken'])
+
+    session_token = request.cookies.get("authToken")
+
+    print(f"authToken: {session_token}")
 
     try:
         await user_add_reply(forum_id, reply_comment, session_token)

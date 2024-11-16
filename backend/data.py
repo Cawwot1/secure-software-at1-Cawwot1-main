@@ -13,6 +13,8 @@ async def admin_retrieve_forum_data():
 
 async def admin_retrieve_author_name(session_token):                                                #Stage 2.2
     for _, user in users.items():  # Ignore the email (key), just get the User object               
+        print(user.token)
+        print(session_token)
         if user.token == session_token:
             return f"{user.first_name} {user.last_name}"
     return None

@@ -12,10 +12,12 @@ export default async function requestUserAuthLogin(email, password) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'include': 'credentials'
                 //'Authorization': `session token ${token}`, //ADDDED
                 //'CSRF Token': `crsf token ${csrf_token}` //ADDDED                           
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
+            credentials: 'include' // Include credentials (cookies) in the request
         });
 
         // Check if the response is not OK 

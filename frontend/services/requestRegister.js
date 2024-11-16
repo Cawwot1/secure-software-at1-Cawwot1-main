@@ -14,6 +14,7 @@ export default async function requestUserAuthRegister(email, password, firstName
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'include': 'credentials'
                 //'Authorization': `session token ${token}`, //ADDDED
                 //'CSRF Token': `csrf token ${csrf_token}` //ADDDED  
             },

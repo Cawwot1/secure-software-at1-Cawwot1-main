@@ -25,9 +25,11 @@ export default async function requestReplySubmit(forumDataID, replyComment) {
         const response = await fetch(SERVER_URL + '/forum/reply/submit', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'include': 'credentials'
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
+            credentials: 'include'
         });
 
         // Check if the response is not OK 
