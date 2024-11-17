@@ -30,7 +30,7 @@ export default async function requestUserAuthRegister(email, password, firstName
         const result = await response.json(); // Parse JSON response
         
         console.log('Response from server:', result);
-        return [result.token, result.csrf_token]; // Return the token if registration is successful                           Stage 2.2 Added "result.csrf_token" to return it to local storage
+        return result.csrf_token; // Return the token if registration is successful                           Stage 2.2 Added "result.csrf_token" to return it to local storage
     
     } catch (error) {
         console.error('Error during registration:', error);

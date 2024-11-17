@@ -2,30 +2,27 @@ import config from '../config.json';
 const SERVER_URL = `${config.backend.url}`;
 
 export default async function requestUserCreateForum(title, forumQuestion) {
-    const token = localStorage.getItem('authToken');
     const csrf_token = localStorage.getItem('csrfToken');
     
-    console.log(`Session Token after login is ${token}
-        CSRF Token after login is ${csrf_token}`)
-    
-    if (!token || !csrf_token) {
-        throw new Error('No token found');
+    if (!csrf_token) {
+        throw new Error('No CSRF token found');
     }
 
     const data = {
         title: title,
         forumQuestion: forumQuestion, 
-        sessionToken: token,
-        csrfToken: token
+        csrfToken: csrf_token
     };
 
     try { 
         const response = await fetch(SERVER_URL + '/forum/new/question', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'include': 'credentials'
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
+            credentials: 'include' // Include credentials (cookies) in the request
         });
 
         // Check if the response is not OK 

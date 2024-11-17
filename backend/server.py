@@ -42,7 +42,6 @@ async def register_user():
         session_token, csrf_token = await user_auth_register(email, password, first_name, last_name)                       #Authentication Register - Stage 1.2 || Stage 2.1 & 2.2 Returns csrf_token & session token
 
         response = make_response(jsonify({"message": "User registered successfully", 
-                                          "token": session_token, 
                                           "csrf_token": csrf_token}), 201)
         
         response.set_cookie("authToken", session_token, samesite="Lax", httponly=True, path = "/")
@@ -80,8 +79,9 @@ async def logout_user():
 
     try:
         data = request.json
-        session_token = await sanitise_input(data['sessionToken'])
-        csrf_token = await sanitise_input(data['sessionToken'])
+        csrf_token = await sanitise_input(data['csrfToken'])
+
+        session_token = request.cookies.get("authToken")
 
         await user_auth_logout(session_token, csrf_token)
 
@@ -100,7 +100,8 @@ async def create_new_forum():
     data = request.json
     forum_title = await sanitise_input(data['title'])
     forum_question = await sanitise_input(data['forumQuestion'])
-    session_token = await sanitise_input(data['sessionToken'])
+
+    session_token = request.cookies.get("authToken")
 
     try:
         await user_create_forum(forum_title, forum_question, session_token)
@@ -124,8 +125,6 @@ async def validate_token():
 
     session_token = request.cookies.get("authToken")
 
-    print(f"authToken: {session_token}")
-
     validate_var, error_info, user_token, server_token = await user_auth_validate_token(session_token, csrf_token)               #Stage 2.2 | Splits the validation result (for more detail about errors)
 
     try:
@@ -148,8 +147,6 @@ async def store_reply():
     reply_comment = await sanitise_input(data['reply'])
 
     session_token = request.cookies.get("authToken")
-
-    print(f"authToken: {session_token}")
 
     try:
         await user_add_reply(forum_id, reply_comment, session_token)

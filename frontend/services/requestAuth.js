@@ -3,19 +3,14 @@ const SERVER_URL = `${config.backend.url}`;
 
 export default async function requestValidateToken() {
     try { 
-
-        const token = localStorage.getItem('authToken');                       
+                  
         const csrf_token = localStorage.getItem('csrfToken');
         
-        console.log(`Session Token after login is ${token}
-        CSRF Token after login is ${csrf_token}`)
-        
-        if (!token || !csrf_token) {
-            throw new Error('No token found');
+        if (!csrf_token) {
+            throw new Error('No CSRF token found');
         }
 
         const data = {
-            sessionToken: token,
             csrfToken: csrf_token
         }
 

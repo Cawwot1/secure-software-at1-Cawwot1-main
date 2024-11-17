@@ -3,19 +3,17 @@ const SERVER_URL = `${config.backend.url}`;
 
 export default async function requestReplySubmit(forumDataID, replyComment) {
     
-    const token = localStorage.getItem('authToken');
     const csrf_token = localStorage.getItem('csrfToken');
     
     //Testing Issue | No reply data
     console.log(`Forum Data: ${forumDataID}, Reply Comment: ${replyComment}`)
 
-    if (!token) {
-        throw new Error('No token found');
+    if (!csrf_token) {
+        throw new Error('No CSRF token found');
     }
     const data = {
         forumId: forumDataID,
         reply: replyComment,
-        sessionToken: token,
         csrfToken: csrf_token
     };
 
