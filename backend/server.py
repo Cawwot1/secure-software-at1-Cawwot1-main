@@ -108,7 +108,7 @@ async def login_user():
 
     try:
 
-        session_token, csrf_token = await user_auth_login(email, password)                       #Authentication Register - Stage 1.2 || Stage 2.1 & 2.2 Returns csrf_token & session token
+        session_token, csrf_token = await user_auth_login(email, password)                     
 
         response = make_response(jsonify({"message": "User registered successfully"}), 201)
         
@@ -133,6 +133,7 @@ async def logout_user():
 
         response = make_response(jsonify({"message": "User logged out successfully"}), 200)
         response.delete_cookie("authToken")
+        response.delete_cookie("csrf_token")
 
         return response
 
