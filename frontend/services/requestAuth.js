@@ -3,22 +3,13 @@ const SERVER_URL = `${config.backend.url}`;
 
 export default async function requestValidateToken() {
     try { 
-                  
-        const csrf_token = localStorage.getItem('csrfToken');
-        
-        if (!csrf_token) {
-            throw new Error('No CSRF token found');
-        }
 
-        const data = {
-            csrfToken: csrf_token
-        }
+        const data = {}
 
         const response = await fetch(SERVER_URL + '/auth/validate', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'include': 'credentials'
             },
             body: JSON.stringify(data),
             credentials: 'include' // Include credentials (cookies) in the request

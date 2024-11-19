@@ -107,10 +107,12 @@ if __name__ == "__main__":
 
     print(f"\nSantisied Script: {asyncio.run(sql_injection_test())}") #1.3
 
-    asyncio.run(session_management_test())
+    asyncio.run(session_management_test()) #2.1
 
-    
-
+    #Other Stage
+    #2.3 - Isn't Required
+    #3.1 - Cannot prove: can see in pages (e.g. in login.js)
+    #3.2 - Cannot prove: can see when inspecting page after login (in applications -> cookies)
 
     
 

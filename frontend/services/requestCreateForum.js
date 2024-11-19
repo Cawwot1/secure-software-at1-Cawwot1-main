@@ -2,16 +2,10 @@ import config from '../config.json';
 const SERVER_URL = `${config.backend.url}`;
 
 export default async function requestUserCreateForum(title, forumQuestion) {
-    const csrf_token = localStorage.getItem('csrfToken');
-    
-    if (!csrf_token) {
-        throw new Error('No CSRF token found');
-    }
 
     const data = {
         title: title,
         forumQuestion: forumQuestion, 
-        csrfToken: csrf_token
     };
 
     try { 
@@ -19,7 +13,6 @@ export default async function requestUserCreateForum(title, forumQuestion) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'include': 'credentials'
             },
             body: JSON.stringify(data),
             credentials: 'include' // Include credentials (cookies) in the request

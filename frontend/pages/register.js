@@ -32,9 +32,9 @@ export const Login = () => {
 
         try {
           console.log('Starting registration...');
-          const csrfToken = await requestUserAuthRegister(email, password, firstName, lastName);                        //Stage 2.2 Catches both tokens instead of just "token"
-          
-          localStorage.setItem('csrfToken', csrfToken)                                                                            //Stage 2.2 Stores csrf token inside local storage
+          const response = await requestUserAuthRegister(email, password, firstName, lastName);
+
+          console.log(`Registration Data: ${response}`)
 
           // Using Next.js router for redirection | Stage 3.1
           router.push('/forum'); // Redirects to '/forum' page

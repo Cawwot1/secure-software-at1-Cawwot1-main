@@ -3,18 +3,12 @@ const SERVER_URL = `${config.backend.url}`;
 
 export default async function requestReplySubmit(forumDataID, replyComment) {
     
-    const csrf_token = localStorage.getItem('csrfToken');
-    
     //Testing Issue | No reply data
     console.log(`Forum Data: ${forumDataID}, Reply Comment: ${replyComment}`)
 
-    if (!csrf_token) {
-        throw new Error('No CSRF token found');
-    }
     const data = {
         forumId: forumDataID,
-        reply: replyComment,
-        csrfToken: csrf_token
+        reply: replyComment
     };
 
     //console.log(data) | Correct
@@ -24,7 +18,6 @@ export default async function requestReplySubmit(forumDataID, replyComment) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'include': 'credentials'
             },
             body: JSON.stringify(data),
             credentials: 'include'

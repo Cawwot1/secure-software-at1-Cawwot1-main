@@ -49,8 +49,6 @@ async def user_add_reply(forum_id, reply_text, session_token):
     # Retrieve the author from the users dictionary using the session token
     author = await admin_retrieve_author_name(session_token)
 
-    #print(f"Session Token {session_token}\nAuthor: {author}")                              TEST
-
     if not author:
         abort(401, description="Invalid session token")
 

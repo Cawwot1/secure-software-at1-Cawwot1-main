@@ -3,29 +3,18 @@ const SERVER_URL = `${config.backend.url}`;
 
 
 export default async function requestUserLogout() {
-    try { 
-        const csrf_token = localStorage.getItem('csrfToken');
-        
-        if (!csrf_token) {
-            throw new Error('No token found');
-        }
-        console.log('Logging out...');
+    try {
 
-        const data = {
-            csrfToken: csrf_token
-        }
+        const data = {}
 
         const response = await fetch(SERVER_URL + '/auth/logout', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                'include': 'credentials'
             },
             body: JSON.stringify(data),
             credentials: 'include' // Include credentials (cookies) in the request
         });
-        
-        localStorage.removeItem('csrfToken');
 
         // Check if the response is not OK 
         if (!response.ok) {
@@ -35,7 +24,6 @@ export default async function requestUserLogout() {
 
         const result = await response.json(); // Parse JSON response
         console.log('Response from server:', result);
-        localStorage.removeItem('csrfToken');
 
         return result; 
     } catch (error) {

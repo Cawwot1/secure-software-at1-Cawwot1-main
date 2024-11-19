@@ -11,10 +11,7 @@ export default async function requestUserAuthLogin(email, password) {
         const response = await fetch(SERVER_URL + '/auth/login', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'include': 'credentials'
-                //'Authorization': `session token ${token}`, //ADDDED
-                //'CSRF Token': `crsf token ${csrf_token}` //ADDDED                           
+                'Content-Type': 'application/json',                     
             },
             body: JSON.stringify(data),
             credentials: 'include' // Include credentials (cookies) in the request
@@ -28,7 +25,7 @@ export default async function requestUserAuthLogin(email, password) {
 
         const result = await response.json(); // Parse JSON response
 
-        return result.csrf_token; // Return the token if registration is successful                           Stage 2.2 Added "result.csrf_token" to return it to local storage
+        return result; // Return the token if registration is successful                           Stage 2.2 Added "result.csrf_token" to return it to local storage
     } catch (error) {
         console.error('Error during registration:', error);
         throw error; // Re-throw the error so it can be handled in handleSubmit

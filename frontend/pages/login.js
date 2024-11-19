@@ -29,9 +29,9 @@ export const Login = () => {
     
       try {
         
-        const csrfToken = await requestUserAuthLogin(email, password);                      //Stage 2.2 Catches both tokens instead of just "token"
-        
-        localStorage.setItem('csrfToken', csrfToken)                                                                            //Stage 2.2 Stores csrf token inside local storage
+        const response = await requestUserAuthLogin(email, password);
+
+        console.log(`Login Data: ${response}`)
 
         router.push('/forum'); // Redirects to '/forum' page | Stage 3.1
 
