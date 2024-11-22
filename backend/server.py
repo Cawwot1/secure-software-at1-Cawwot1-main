@@ -19,7 +19,7 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'  # Helps prevent CSRF attacks f
 CORS(app, supports_credentials=True, origins=["http://127.0.0.1:3001"])
 
 EMAIL_PATTERN = re.compile(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$') # Email pattern: typical email structure
-USERNAME_PATTERN = re.compile(r'^[a-zA-Z0-9_.-]{3,20}$') # Username pattern: Ensures names have 3-20 alphanumeric characters and some symbols
+USERNAME_PATTERN = re.compile(r'^[a-zA-Z0-9_.-]{3,40}$') # Username pattern: Ensures names have 3-20 alphanumeric characters and some symbols
 PASSWORD_PATTERN = re.compile(r'^(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,40}$') # Password pattern: Enforces length, letter, digit, and special character requirements, while must also be between 8 & 20 characters long
 
 # User registration function
@@ -30,13 +30,13 @@ async def user_auth_register(email, password, first_name, last_name):
         abort(400, description="Email already exists")
 
     if not EMAIL_PATTERN.match(email):
-        abort(400, description="Invalid email format (valid example: user.name@example.com)")
+        abort(400, description="Invalid email format (valid example: username@example.com)")
     
     if not PASSWORD_PATTERN.match(password):
-        abort(400, description="Password must be 8-40 characters, include at least one letter, one number, and one special character")
+        abort(400, description="Password must be 3-40 characters, include at least one letter, one number, and one special character")
     
     if not USERNAME_PATTERN.match(first_name):
-        abort(400, description="First name must be 8-40 characters, and contain no special characters except . or _ or -")
+        abort(400, description="First name must be 3-40 characters, and contain no special characters except . or _ or -")
     
     if not USERNAME_PATTERN.match(last_name):
         abort(400, description="Last name must be 8-40 characters, and contain no special characters except . or _ or -")
@@ -111,7 +111,6 @@ async def login_user():
         session_token, csrf_token = await user_auth_login(email, password)                     
 
         response = make_response(jsonify({"message": "User registered successfully"}), 201)
-        
         response.set_cookie("authToken", session_token, samesite="Lax", httponly=True, path = "/", secure=True)
         response.set_cookie("csrf_token", csrf_token, samesite="Lax", httponly=True, path = "/", secure=True)
 
@@ -188,7 +187,7 @@ async def validate_token():
         
 @app.route('/forum/reply/submit', methods=['POST'])
 async def store_reply():
-    data = request.json
+    data = request.jsond
     forum_id = await sanitise_input(str(data['forumId']))
     reply_comment = await sanitise_input(data['reply'])
 
