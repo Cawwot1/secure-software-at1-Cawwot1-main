@@ -18,7 +18,7 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Strict'  # Helps prevent CSRF attacks f
 
 CORS(app, supports_credentials=True, origins=["http://127.0.0.1:3001"])
 
-EMAIL_PATTERN = re.compile(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$') # Email pattern: typical email structure
+EMAIL_PATTERN = re.compile(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$') # Email pattern: typical email structure
 USERNAME_PATTERN = re.compile(r'^[a-zA-Z0-9_.-]{3,40}$') # Username pattern: Ensures names have 3-20 alphanumeric characters and some symbols
 PASSWORD_PATTERN = re.compile(r'^(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,40}$') # Password pattern: Enforces length, letter, digit, and special character requirements, while must also be between 8 & 20 characters long
 
@@ -52,7 +52,7 @@ async def user_auth_register(email, password, first_name, last_name):
 #XSS Sanitation
 async def sanitise_input(user_input):
     # Basic HTML escaping
-    return html.escape(user_input)
+    return re.escape(user_input)
 
 #Helper Token Validation Fuction
 async def token_validation_helper(session_token):
@@ -82,6 +82,8 @@ async def register_user():
     first_name = await sanitise_input(data['firstName'])
     last_name = await sanitise_input(data['lastName'])
 
+    print(password)
+
     try:
         session_token, csrf_token = await user_auth_register(email, password, first_name, last_name)                       
 
@@ -103,8 +105,6 @@ async def login_user():
     data = request.json
     email = await sanitise_input(data['email'])
     password = await sanitise_input(data['password'])
-
-    print(password)
 
     try:
 
