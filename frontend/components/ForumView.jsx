@@ -36,7 +36,7 @@ export default function ForumContent({ selectedForumData }) {
     
     try {
       const response = await requestReplySubmit(forumId, comment);
-      if (response.message === 'Forum reply added succesfully') {
+      if (response.message === 'Forum reply added successfully') {
         setComment(''); // Reset comment box
         console.log("Submission of forum reply successful");
         await fetchUpdatedForumData(forumId); // Fetch updated replies from the server after submission
