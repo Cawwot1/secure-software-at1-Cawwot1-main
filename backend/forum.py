@@ -14,11 +14,11 @@ user_add_reply - adds a reply to the end of a forum (based on forum_id)
 # Dictionary to store forums by their numeric ID
 next_forum_id = 1  # This will serve as our auto-incrementing ID
 
-async def user_create_forum(forum_title, forum_question, session_token):
+async def user_create_forum(forum_title, forum_question, session_token, csrf_token):
     global next_forum_id
     # Create a new Forum object
 
-    author = await admin_retrieve_author_name(session_token)
+    author = await admin_retrieve_author_name(session_token, csrf_token)
     new_forum = Forum(
         id=next_forum_id,
         title=forum_title,
@@ -32,7 +32,7 @@ async def user_create_forum(forum_title, forum_question, session_token):
 
     return new_forum.id
 
-async def user_add_reply(forum_id, reply_text, session_token):
+async def user_add_reply(forum_id, reply_text, session_token, csrf_token):
     
     target_forum = None  # Initialize target_forum as None
 
@@ -40,9 +40,7 @@ async def user_add_reply(forum_id, reply_text, session_token):
     for fid, forum in forums.items():                     
         
         if str(fid) == str(forum_id):
-            target_forum = forum
-            
-            print(target_forum)                                                             
+            target_forum = forum                                                          
             
             break  # Exit the loop once the forum is found
 
@@ -50,7 +48,7 @@ async def user_add_reply(forum_id, reply_text, session_token):
         abort(404, description="Forum found with invalid forum id")
 
     # Retrieve the author from the users dictionary using the session token
-    author = await admin_retrieve_author_name(session_token)
+    author = await admin_retrieve_author_name(session_token, csrf_token)
 
     if not author:
         abort(401, description="Invalid session token")

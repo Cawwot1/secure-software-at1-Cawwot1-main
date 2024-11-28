@@ -139,9 +139,10 @@ async def create_new_forum():
     forum_question = await sanitise_input(data['forumQuestion'])  # Sanitizes forum question input
 
     session_token = request.cookies.get("authToken")  # Retrieves session token from cookies
+    csrf_token = request.cookies.get("csrf_token")
 
     try:
-        await user_create_forum(forum_title, forum_question, session_token)  # Creates the new forum post
+        await user_create_forum(forum_title, forum_question, session_token, csrf_token)  # Creates the new forum post
         return jsonify({"message": "Forum created successfully"}), 201  # Success response
     except Exception as e:
         return jsonify({"error": str(e)}), 401  # Error handling
@@ -184,10 +185,11 @@ async def store_reply():
     forum_id = await sanitise_input(str(data['forumId']))  # Sanitizes forum ID
     reply_comment = await sanitise_input(data['reply'])  # Sanitizes reply comment
 
-    session_token = request.cookies.get("authToken")  # Retrieves session token
+    session_token = request.cookies.get("authToken") # Retrieves session token
+    csrf_token = request.cookies.get("csrf_token")
 
     try:
-        await user_add_reply(forum_id, reply_comment, session_token)  # Adds reply to the forum post
+        await user_add_reply(forum_id, reply_comment, session_token, csrf_token)  # Adds reply to the forum post
         return jsonify({"message": "Forum reply added successfully"}), 201  # Success response
     except Exception as e:
         return jsonify({"error": str(e)}), 401  # Error handling
