@@ -193,4 +193,4 @@ async def store_reply():
         return jsonify({"error": str(e)}), 401  # Error handling
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5005)  # Runs the Flask app on port 5005 for development
+    app.run(debug=False, port=5005)
